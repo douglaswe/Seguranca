@@ -49,9 +49,11 @@
   }
   
   .signup-link {
-   
- 
-    font-size: 7px;
+  display: flex;
+  justify-content: center;
+    text-align: center;
+    margin-top: 80px;
+    font-size: 17px;
     color:  #007bff; 
     font-family: Arial, Helvetica, sans-serif; 
   }

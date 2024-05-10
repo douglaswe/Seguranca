@@ -17,11 +17,11 @@ export function Cadastrar(){
         <input className="input-cadastrar" type="email" name="email" required placeholder="Email" />
         <input className="input-cadastrar" type="password" name="senha" required placeholder="Senha" />
         <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <input type="checkbox" name="allow" />
-          Eu aceito os Termos de uso
+          <input type="checkbox" style={{cursor:'pointer'}} name="allow" />
+          <Link to="/termos">Eu aceito os Termos de uso</Link> 
         </label>
         <button className="button-cadastrar" type="submit">Cadastrar</button>
-        <Link className="signup-cadastrar" to="/">Crie uma!</Link>
+        <Link className="signup-cadastrar" to="/">Já tem uma conta? Entrar</Link>
       </form>
     </div>
   );
