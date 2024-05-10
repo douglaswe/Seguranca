@@ -1,0 +1,50 @@
+.container {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  margin-top: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 300px;
+  margin: auto;
+}
+
+.input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  background-color: #f50057;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.signup-link a {
+  color: #007bff;
+}
+
+.footer {
+  margin-top: 16px;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+}
