@@ -5,14 +5,16 @@ import './reset.css';
 import { Cadastrar } from './Cadastrar';
 import { Login } from './Login';
 import { Termos } from './Termos';
+import Home from './Home';
 
 
 createRoot(document.getElementById('root')).render(
   <Router>
     <Routes>
-      <Route exact path="/" element={<Login />} /> 
-      <Route path="/cadastrar" element={<Cadastrar />} /> 
-      <Route path="/termos" element={<Termos />} /> 
+      <Route exact path="/" element={<Login />} />
+      <Route path="/cadastrar" element={<Cadastrar />} />
+      <Route path="/termos" element={<Termos />} />
+      <Route path="/home" element={<Home />} />
     </Routes>
   </Router>
 );
