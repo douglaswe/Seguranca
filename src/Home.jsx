@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import './login.css';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -35,24 +36,26 @@ export default function Home() {
   return (
     <>
       {userDetails ? (
-        <div className="user-profile">
+        <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
           <div className="card">
             <br />
             <h1>Bem vindo</h1>
             <br />
+            <br />
             <img
               src={userDetails.picture}
-              alt={`${userDetails.given_name}'perfil`}
+              alt={`${userDetails.given_name} perfil`}
               className="perfil"
             />
             <br />
-            <h2 className="name">{userDetails.name}</h2>
+            <br />
+            <p className="nome">{userDetails.name}</p>
+            <br />
             <br />
             <p className="email">{userDetails.email}</p>
             <br />
             <br />
-            <br />
-            <button onClick={handleLogout}>Sair</button>
+            <button className="button" onClick={handleLogout}>Sair</button>
 
           </div>
         </div>

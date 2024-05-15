@@ -20,7 +20,7 @@ export function Login() {
 
   const handleClick = () => {
     const callbackUrl = `${window.location.origin}`;
-    const googleClientId = 'colocar o id do cliente aqui';
+    const googleClientId = '294273040667-a1l4hht00398pp018768td1r88ctai0a.apps.googleusercontent.com';
     const targetUrl = `https://accounts.google.com/o/oauth2/auth?redirect_uri=${encodeURIComponent(
       callbackUrl
     )}&response_type=token&client_id=${googleClientId}&scope=openid%20email%20profile&prompt=select_account`;
@@ -54,21 +54,21 @@ export function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          required
+          
           className="input"
         />
         <input
           type="password"
-           value={password}
-           onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           placeholder="Senha"
-          required
+          
           className="input"
         />
         <button type="submit" className="button">Entrar</button>
         <div className="btn-container">
           <br />
-          <button className="btn btn-primary" onClick={handleClick}>
+          <button className="btn-primary" onClick={handleClick}>
             <Google />
             Entrar com o Google
           </button>
