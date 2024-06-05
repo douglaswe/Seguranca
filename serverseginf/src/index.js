@@ -6,10 +6,11 @@ app.get('/', function (req, res) {
     res.send('Raiz');
 });
 
+//alterar
 const db = mysql.createConnection({
     host: 'localhost',    
     user: 'root',         
-    password: 'ciscoTr3t@',         
+    password: '',         
     database: 'seginf'  
 });
 
