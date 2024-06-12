@@ -1,16 +1,13 @@
+const { Pool } = require('pg');
 const express = require('express');
 const app = express();
-const mysql = require('mysql2');
 
 app.get('/', function (req, res) {
     res.send('Raiz');
 });
 
-const db = mysql.createConnection({
-    host: 'localhost',    
-    user: 'root',         
-    password: 'ciscoTr3t@',         
-    database: 'seginf'  
+const db = new Pool({
+    connectionString: "postgres://aygmbahg:GCwxJ9kJTABAiFxeuK520igmfHIsTgnF@kala.db.elephantsql.com/aygmbahg"
 });
 
 db.connect((err) => {
@@ -25,16 +22,20 @@ app.get('/getusers', (req, res) => {
     
     db.query(sql, (err, results) => {
       if (err) throw err;
-      res.json(results);
+      res.json(results.rows);
     });
 });
 
 app.get('/gettermo', (req, res) => {
-    const sql = 'SELECT * FROM termo WHERE ter_data = (SELECT MAX(ter_data) FROM termo);';
+    const sql = `SELECT * FROM termo t
+                JOIN opcional o 
+                ON o.opc_id_termo = t.ter_id
+                WHERE t.ter_data = (SELECT MAX(ter_data) FROM termo);`;
     
+
     db.query(sql, (err, results) => {
       if (err) throw err;
-      res.json(results);
+      res.json(results.rows);
     });
 });
 
