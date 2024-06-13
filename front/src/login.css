@@ -108,3 +108,41 @@ border-radius: 50%;
 margin-bottom: 20px;
 border: 3px solid #eaeaea;
 }
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+}
+
+td {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Adding hover effect on rows */
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+
+th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+
+td:last-child {
+  text-align: center;
+}

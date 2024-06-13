@@ -1,60 +1,56 @@
-import React from 'react';
-import './login.css';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie"
-import { Google } from './assets/google';
 
 export function Login() {
-
   const navigate = useNavigate();
-  const [isLoggedin, setIsLoggedin] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log({ email, password });
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3003/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ usu_email: email, usu_senha: password }),
+      });
 
-  const handleClick = () => {
-    const callbackUrl = `${window.location.origin}`;
-    const googleClientId = '294273040667-a1l4hht00398pp018768td1r88ctai0a.apps.googleusercontent.com';
-    const targetUrl = `https://accounts.google.com/o/oauth2/auth?redirect_uri=${encodeURIComponent(
-      callbackUrl
-    )}&response_type=token&client_id=${googleClientId}&scope=openid%20email%20profile&prompt=select_account`;
-    window.location.href = targetUrl;
-  };
+      const data = await response.json();
+      console.log("Resposta do servidor:", data);
 
-  useEffect(() => {
-    const accessTokenRegex = /access_token=([^&]+)/;
-    const isMatch = window.location.href.match(accessTokenRegex);
-
-    if (isMatch) {
-      const accessToken = isMatch[1];
-      Cookies.set("access_token", accessToken);
-      setIsLoggedin(true);
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        setMessage("Login successful");
+        navigate("/home");
+      } else {
+        setMessage(data.error || "Login failed");
+      }
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      setMessage("Login failed");
     }
-  }, []);
+  };
 
   useEffect(() => {
-    if (isLoggedin) {
+    const token = localStorage.getItem("token");
+    if (token) {
       navigate("/home");
     }
-  }, [isLoggedin, navigate]);
-
+  }, [navigate]);
 
   return (
     <div className="container">
-      <form className="form"  onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <h1 className="title">Login</h1>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          
           className="input"
         />
         <input
@@ -62,20 +58,16 @@ export function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Senha"
-          
           className="input"
         />
-        <button type="submit" className="button">Entrar</button>
-        <div className="btn-container">
-          <br />
-          <button className="btn-primary" onClick={handleClick}>
-            <Google />
-            Entrar com o Google
-          </button>
-        </div>
-        <Link className='signup-link' to="/cadastrar">Crie uma!</Link>
+        <button type="submit" className="button">
+          Entrar
+        </button>
+        {message && <p>{message}</p>}
+        <Link className="signup-link" to="/cadastrar">
+          Crie uma!
+        </Link>
       </form>
     </div>
   );
 }
-

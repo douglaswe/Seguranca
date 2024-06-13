@@ -5,66 +5,54 @@ import './login.css';
 
 export default function Home() {
   const navigate = useNavigate();
-  const [userDetails, setUserDetails] = useState({});
 
-  const getUserDetails = async (accessToken) => {
-    const response = await fetch(
-      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
-    );
-    const data = await response.json();
-    setUserDetails(data);
-  };
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const accessToken = Cookies.get("access_token");
+    // Função para buscar usuários da API
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:3003/getusers');
+        if (!response.ok) {
+          const errorMessage = await response.text();
+          throw new Error(errorMessage);
+        }
+        const data = await response.json();
+        setUsers(data);
+        console.log(data)
+      } catch (error) {
+        console.error('Erro ao buscar usuários:', error);
+        setError(error.message);
+      }
+    };
 
-    if (!accessToken) {
-      navigate("/");
-    }
-
-    getUserDetails(accessToken);
-  }, [navigate]);
-
-
-  const handleLogout = () => {
-    // Remover o token de acesso dos cookies
-    Cookies.remove("access_token");
-    // Redirecionar o usuário de volta para a página de login
-    navigate("/");
-  };
+    fetchUsers();
+  }, []);
 
   return (
-    <>
-      {userDetails ? (
-        <div style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
-          <div className="card">
-            <br />
-            <h1>Bem vindo</h1>
-            <br />
-            <br />
-            <img
-              src={userDetails.picture}
-              alt={`${userDetails.given_name} perfil`}
-              className="perfil"
-            />
-            <br />
-            <br />
-            <p className="nome">{userDetails.name}</p>
-            <br />
-            <br />
-            <p className="email">{userDetails.email}</p>
-            <br />
-            <br />
-            <button className="button" onClick={handleLogout}>Sair</button>
-
-          </div>
-        </div>
-      ) : (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="card">
+        <br />
+        <h1>Bem vindo</h1>
         <div>
-          <h1>Carregando...</h1>
+        <h1>Lista de Usuários</h1>
+<ul>
+  {users.map(user => (
+    <li key={user.usu_id}>
+      <ul>
+        <li>Nome: {user.usu_nome}</li>
+        <li>Email: {user.usu_email}</li>
+        <li>Telefone: {user.usu_telefone}</li>
+        <li>{user.usu_senha}</li>
+      </ul>
+    </li>
+  ))}
+</ul>
+
+        
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
-
