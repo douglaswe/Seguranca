@@ -3,36 +3,6 @@ import './cadastrar.css';
 import { Link } from 'react-router-dom';
 
 export function Cadastrar() {
- 
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      const data = Object.fromEntries(formData.entries());
-      data.termo_id = termo.ter_id
-      console.log(data);
-      try {
-          const response = await fetch('http://localhost:3003/cadastrar', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(data),
-          });
-  
-          if (!response.ok) {
-              const errorMessage = await response.text();
-              throw new Error(errorMessage);
-          }
-          
-          console.log('Usuário cadastrado com sucesso!');
-          // Aqui você pode redirecionar para outra página ou mostrar uma mensagem de sucesso
-      } catch (error) {
-          console.error('Erro ao cadastrar usuário:', error);
-          // Tratar erro e mostrar mensagem adequada para o usuário
-      }
-  };
-  
-
   const [termo, setTermo] = useState({});
   const [opcionais, setOpcionais] = useState([]);
   const [error, setError] = useState(null);
@@ -49,18 +19,46 @@ export function Cadastrar() {
         }
         const data = await response.json();
         setTermo(data);
-        setOpcionais(termo.ter_opcionais);
+        setOpcionais(data.ter_opcionais); // Atualizado para usar data.ter_opcionais
       } catch (error) {
         console.error('Erro ao buscar termos:', error);
         setError(error.message);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Mover para o finally para garantir que sempre será definido
       }
     };
 
     fetchTermos();
   }, []);
-  
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+    data.termo_id = termo.ter_id;
+    console.log(data);
+    try {
+      const response = await fetch('http://localhost:3003/cadastrar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+      
+      console.log('Usuário cadastrado com sucesso!');
+      alert('cadastrado com sucesso')
+    } catch (error) {
+      console.error('Erro ao cadastrar usuário:', error);
+      
+    }
+  };
+
   const abrirModal = () => {
     setIsModalOpen(true);
   };
@@ -75,8 +73,12 @@ export function Cadastrar() {
     return date.toLocaleDateString(undefined, options);
   };
 
-  const temOpc = opcionais.length > 0 ? opcionais : null;
-  
+  if (isLoading) {
+    return <div style={{ display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',marginTop:300}}>Carregando...</div>;
+  }
+
   return (
     <div className="container-cadastrar">
       <form className="form-cadastrar" onSubmit={handleSubmit}>
@@ -89,17 +91,19 @@ export function Cadastrar() {
           <input type="checkbox" style={{ cursor: 'pointer' }} name="termo" required />
           <p onClick={abrirModal} style={{ cursor: 'pointer', textDecoration: 'underline' }}>Eu aceito os Termos de uso</p>
         </label>
-        {!isLoading && temOpc && (
+        {opcionais.length > 0 && (
           opcionais.map((item) => (
             <label key={item.opc_id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input type="checkbox" style={{ cursor: 'pointer' }} name={"opc " + item.opc_id} />
-            <p>{item.opc_texto}</p>
-          </label>
+              <input type="checkbox" style={{ cursor: 'pointer' }} name={`opc_${item.opc_id}`} />
+              <p>{item.opc_texto}</p>
+            </label>
           ))
-        )};
+        )}
 
         <button className="button-cadastrar" type="submit">Cadastrar</button>
+    
         <Link className="signup-cadastrar" to="/">Já tem uma conta? Entrar</Link>
+     
       </form>
 
       {isModalOpen && (
@@ -107,8 +111,8 @@ export function Cadastrar() {
           <div className="modal-content">
             <span className="close" onClick={fecharModal}>&times;</span>
             <div>
-                  <h3>{termo.ter_texto}</h3>
-                  <p>Data do termo: {formatarData(termo.ter_data)}</p>
+              <h3>{termo.ter_texto}</h3>
+              <p>Data do termo: {formatarData(termo.ter_data)}</p>
             </div>
           </div>
         </div>
