@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import './cadastrar.css';
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export function Cadastrar() {
   const [termo, setTermo] = useState({});
@@ -8,6 +9,7 @@ export function Cadastrar() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTermos = async () => {
@@ -53,6 +55,7 @@ export function Cadastrar() {
       
       console.log('Usuário cadastrado com sucesso!');
       alert('cadastrado com sucesso')
+      navigate("/");
     } catch (error) {
       console.error('Erro ao cadastrar usuário:', error);
       
