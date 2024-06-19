@@ -104,7 +104,7 @@ export function Cadastrar() {
         )}
 
         <button className="button-cadastrar" type="submit">Cadastrar</button>
-    
+        <br /><br />
         <Link className="signup-cadastrar" to="/">Já tem uma conta? Entrar</Link>
      
       </form>
