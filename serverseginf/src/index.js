@@ -90,6 +90,29 @@ app.post('/cadastrar', async (req,res) => {
         res.status(500).json({ error: error.message });
       }
 });
+
+app.post('/login', async (req, res) => {
+    
+    try {
+        const { usu_email, usu_senha } = req.body;
+        const queryEmail = await db.query(`SELECT usu_id FROM usuario WHERE usu_email = '${usu_email}';`);
+
+        if(queryEmail.rowCount == 0){
+            res.status(500).json({ message: "E-mail não encontrado" });
+        }else{
+            const querySenha = await db.query(`SELECT usu_senha FROM usuario WHERE usu_email = '${usu_email}';`);
+            if(usu_senha != querySenha.rows[0].usu_senha){
+                res.status(500).json({ message: "Senha incorreta" });
+            }else{
+                res.status(201).json({ message: 'Login realizado com sucesso!' });
+            }            
+        }
+        
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+});
+
   
 
 app.listen(3003, function () {

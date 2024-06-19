@@ -18,7 +18,7 @@ export function Login() {
         },
         body: JSON.stringify({ usu_email: email, usu_senha: password }),
       });
-
+      
       const data = await response.json();
       console.log("Resposta do servidor:", data);
 
