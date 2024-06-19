@@ -94,7 +94,7 @@ export function Cadastrar() {
         {opcionais.length > 0 && (
           opcionais.map((item) => (
             <label key={item.opc_id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <input type="checkbox" style={{ cursor: 'pointer' }} name={`opc_${item.opc_id}`} />
+              <input type="checkbox" style={{ cursor: 'pointer' }} name={"opc " + item.opc_id} />
               <p>{item.opc_texto}</p>
             </label>
           ))
