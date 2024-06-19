@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    // Verificar se há um token de autenticação válido
+    const token = Cookies.get("token");
+    if (token) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,12 +27,14 @@ export function Login() {
         },
         body: JSON.stringify({ usu_email: email, usu_senha: password }),
       });
-      
+
       const data = await response.json();
       console.log("Resposta do servidor:", data);
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+      
+        Cookies.set("token", data.token, { sameSite: 'None', secure: true }); 
+
         setMessage("Login successful");
         navigate("/home");
       } else {
@@ -34,13 +45,6 @@ export function Login() {
       setMessage("Login failed");
     }
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/home");
-    }
-  }, [navigate]);
 
   return (
     <div className="container">
