@@ -76,16 +76,7 @@
    gap: 10px;
   }
 
-.card{
-  background-color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  padding: 40px;
-  text-align: center;
-  width: 80%;
-  max-width: 500px;
-  margin-top: 20px;
-}
+
 
 .nome{
   color: #333;
@@ -148,7 +139,7 @@ td:last-child {
 }
 
 .button-sair {
-  width: 100%;
+  width: 50%;
   padding: 10px;
   background-color: #007bff;
   color: #fff;
@@ -158,4 +149,133 @@ td:last-child {
   font-size: 18px;
   font-family: Arial, Helvetica, sans-serif;
   margin-top: 20px;
+  margin-left: 350px;
+}
+
+/*home*/
+
+.table {
+  width: 100%;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0px 0px 5px #ccc;
+  border-radius: 5px;
+  max-width: 1120px;
+  margin: 20px auto;
+  word-break: break-all;
+}
+
+.thead th {
+  text-align: start;
+  border-bottom: inset;
+  padding-bottom: 5px;
+}
+
+.tbody td {
+  padding-top: 15px;
+  text-align: start;
+}
+
+.tbody td.align-center {
+  text-align: center;
+}
+
+.tbody td.auto-width {
+  width: auto;
+}
+
+.tbody td.fixed-width {
+  width: 30%;
+}
+
+.tbody td.fixed-width-20 {
+  width: 20%;
+}
+
+.tbody td.fixed-width-5 {
+  width: 5%;
+}
+
+.only-web {
+  display: none;
+}
+
+@media (min-width: 501px) {
+  .only-web {
+    display: table-cell;
+  }
+}
+
+/*modal home*/
+
+.modal {
+  display: none; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgb(0,0,0); 
+  background-color: rgba(0,0,0,0.4);
+}
+
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto; 
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%; /* Adjust as needed */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  border-radius: 10px;
+}
+
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal form label {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.modal form input {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100%;
+}
+
+.modal form button {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.modal form button:hover {
+  background-color: #45a049;
 }

@@ -1,10 +1,13 @@
 const { Pool } = require('pg');
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken'); 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const SECRET_KEY = "chave_secreta"; 
 
 app.get('/', function (req, res) {
     res.send('Raiz');
@@ -104,7 +107,9 @@ app.post('/login', async (req, res) => {
             if(usu_senha != querySenha.rows[0].usu_senha){
                 res.status(500).json({ message: "Senha incorreta" });
             }else{
-                res.status(201).json({ message: 'Login realizado com sucesso!' });
+                const userId = queryEmail.rows[0].usu_id;
+                const token = jwt.sign({ id: userId }, SECRET_KEY, { expiresIn: '1h' }); 
+                res.status(201).json({ message: 'Login realizado com sucesso!', token });
             }            
         }
         
@@ -113,7 +118,44 @@ app.post('/login', async (req, res) => {
       }
 });
 
-  
+app.put('/updateuser/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nome, email, telefone, senha } = req.body;
+
+    try {
+
+        const query = `
+            UPDATE usuario
+            SET usu_nome = $1, usu_email = $2, usu_telefone = $3, usu_senha = $4
+            WHERE usu_id = $5
+            RETURNING *
+        `;
+
+        const values = [nome, email, telefone, senha, id];
+
+        const result = await db.query(query, values);
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao atualizar usuário." });
+    }
+});
+
+app.get('/getuser', async (req, res) => {
+    const token = req.headers.authorization.split(" ")[1];
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const userId = decoded.id;
+        const result = await db.query('SELECT * FROM usuario WHERE usu_id = $1', [userId]);
+        if (result.rowCount > 0) {
+            res.status(200).json(result.rows[0]);
+        } else {
+            res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+    } catch (error) {
+        res.status(401).json({ message: 'Token inválido' });
+    }
+});
 
 app.listen(3003, function () {
     console.log("Servidor rodando na porta 3003...");
