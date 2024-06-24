@@ -1,13 +1,13 @@
 const { Pool } = require('pg');
 const express = require('express');
 const cors = require('cors');
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const SECRET_KEY = "chave_secreta"; 
+const SECRET_KEY = "chave_secreta";
 
 app.get('/', function (req, res) {
     res.send('Raiz');
@@ -27,15 +27,15 @@ db.connect((err) => {
 
 app.get('/getusers', (req, res) => {
     const sql = 'SELECT * FROM usuario';
-    
+
     db.query(sql, (err, results) => {
-      if (err) throw err;
-      res.json(results.rows);
+        if (err) throw err;
+        res.json(results.rows);
     });
 });
 
 app.get('/gettermo', async (req, res) => {
-    try{
+    try {
         const termo = await db.query(`SELECT * FROM termo WHERE ter_data = (SELECT MAX(ter_data) FROM termo);`);
         const id_termo = termo.rows[0].ter_id
         const opc = await db.query(`SELECT opc_id, opc_texto FROM opcional WHERE opc_id_termo = ${id_termo};`);
@@ -46,29 +46,29 @@ app.get('/gettermo', async (req, res) => {
             ter_data: termo.rows[0].ter_data,
             ter_opcionais: opc.rows
         }
-        if(termo.rowCount == 0){
+        if (termo.rowCount == 0) {
             res.status(404).json({ message: 'dados não encontrados' });
-        }else{
+        } else {
             res.status(200).json(resultado);
         }
-    }catch (error) {
+    } catch (error) {
         res.status(500).json({ error: error.message });
-    }   
+    }
 });
 
-app.post('/cadastrar', async (req,res) => {
+app.post('/cadastrar', async (req, res) => {
     try {
-        const { nome , email , telefone , senha, termo_id} = req.body;
+        const { nome, email, telefone, senha, termo_id } = req.body;
         const keys = Object.keys(req.body);
         const opcAceitados = new Array;
 
         const testeEmail = await db.query(`SELECT * FROM usuario WHERE usu_email = '${email}'`);
 
-        if(testeEmail.rowCount > 0){
+        if (testeEmail.rowCount > 0) {
             res.status(500).json({ message: "E-mail já cadastrado" });
-        }else{
+        } else {
             await db.query('INSERT INTO usuario(usu_nome, usu_email, usu_telefone, usu_senha) VALUES($1, $2, $3, $4)',
-            [nome, email, telefone, senha]);
+                [nome, email, telefone, senha]);
 
             const queryUserId = await db.query(`SELECT usu_id FROM usuario WHERE usu_email = '${email}' `);
             const userId = Number(queryUserId.rows[0].usu_id);
@@ -76,46 +76,46 @@ app.post('/cadastrar', async (req,res) => {
             await db.query(`INSERT INTO aceite_termo(ace_id_usuario, ace_id_termo, ace_aceitado)
                 VALUES(${userId}, ${termo_id}, TRUE)`);
 
-            for(let i = 0; i< keys.length; i++){
-                if(keys[i].startsWith('opc')){
+            for (let i = 0; i < keys.length; i++) {
+                if (keys[i].startsWith('opc')) {
                     const opc_id = keys[i].split(' ')[1];
                     opcAceitados.push(Number(opc_id))
                 }
             }
-            for(let i = 0; i< opcAceitados.length; i++){
+            for (let i = 0; i < opcAceitados.length; i++) {
                 db.query(`INSERT INTO aceite_opc(aop_id_usuario, aop_id_termo, aop_id_opcional, aop_aceitado)
                     VALUES(${userId}, ${termo_id}, ${opcAceitados[i]}, TRUE)`);
             }
             res.status(201).json({ message: 'usuário criado com sucesso' });
         }
-        
-      } catch (error) {
+
+    } catch (error) {
         res.status(500).json({ error: error.message });
-      }
+    }
 });
 
 app.post('/login', async (req, res) => {
-    
+
     try {
         const { usu_email, usu_senha } = req.body;
         const queryEmail = await db.query(`SELECT usu_id FROM usuario WHERE usu_email = '${usu_email}';`);
 
-        if(queryEmail.rowCount == 0){
+        if (queryEmail.rowCount == 0) {
             res.status(500).json({ message: "E-mail não encontrado" });
-        }else{
+        } else {
             const querySenha = await db.query(`SELECT usu_senha FROM usuario WHERE usu_email = '${usu_email}';`);
-            if(usu_senha != querySenha.rows[0].usu_senha){
+            if (usu_senha != querySenha.rows[0].usu_senha) {
                 res.status(500).json({ message: "Senha incorreta" });
-            }else{
+            } else {
                 const userId = queryEmail.rows[0].usu_id;
-                const token = jwt.sign({ id: userId }, SECRET_KEY, { expiresIn: '1h' }); 
+                const token = jwt.sign({ id: userId }, SECRET_KEY, { expiresIn: '1h' });
                 res.status(201).json({ message: 'Login realizado com sucesso!', token });
-            }            
+            }
         }
-        
-      } catch (error) {
+
+    } catch (error) {
         res.status(500).json({ error: error.message });
-      }
+    }
 });
 
 app.put('/updateuser/:id', async (req, res) => {
@@ -138,6 +138,21 @@ app.put('/updateuser/:id', async (req, res) => {
         res.status(200).json(result.rows[0]);
     } catch (error) {
         res.status(500).json({ message: "Erro ao atualizar usuário." });
+    }
+});
+
+app.delete('/deleteuser/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await db.query('DELETE FROM usuario WHERE usu_id = $1 RETURNING *', [id]);
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Usuário deletado com sucesso!' });
+        } else {
+            res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 

@@ -45,36 +45,36 @@ export default function Home() {
     setEditingUser(user);
     setIsModalOpen(true);
   };
-/*
-  const handleDelete = async () => {
-    try {
-      const response = await axios.delete(`http://localhost:3003/${user.id}`);
-      setUser(null);
-      toast.success(response.data);
-    } catch (error) {
-      toast.error(error.response.data);
-    }
-    setEditingUser(null);
-  };*/
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:3003/updateuser/${editingUser.usu_id}`, 
+        `http://localhost:3003/updateuser/${editingUser.usu_id}`,
         {
           nome: editingUser.usu_nome,
           email: editingUser.usu_email,
           telefone: editingUser.usu_telefone,
-          senha: editingUser.usu_senha, 
+          senha: editingUser.usu_senha,
         }
       );
-      setUser(response.data); 
+      setUser(response.data);
       setEditingUser(null);
       setIsModalOpen(false);
       toast.success("Usuário atualizado com sucesso!");
     } catch (error) {
       toast.error("Erro ao atualizar usuário.");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:3003/deleteuser/${user.usu_id}`);
+      setUser(null);
+      toast.success(response.data.message);
+      handleLogout();
+    } catch (error) {
+      toast.error(error.response.data.message);
     }
   };
 
@@ -114,9 +114,9 @@ export default function Home() {
                 <td className="align-center fixed-width-5">
                   <FaEdit onClick={() => handleEdit(user)} />
                 </td>
-              {/*  <td className="align-center fixed-width-5">
+                <td className="align-center fixed-width-5">
                   <FaTrash onClick={handleDelete} />
-                </td>*/}
+                </td>
               </tr>
             </tbody>
           </table>
