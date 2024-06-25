@@ -279,3 +279,51 @@ td:last-child {
 .modal form button:hover {
   background-color: #45a049;
 }
+
+/* Modal de exclusão */
+
+.modal-delete {
+  background-color: #fefefe;
+  margin: 10% auto; 
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-delete h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.modal-delete p {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+.modal-delete .button {
+  margin: 5px;
+}
+
+.modal-delete .button:first-of-type {
+  background-color: #28a745;
+}
+
+.modal-delete .button:first-of-type:hover {
+  background-color: #218838;
+}
+
+.modal-delete .button:last-of-type {
+  background-color: #dc3545;
+}
+
+.modal-delete .button:last-of-type:hover {
+  background-color: #c82333;
+}
+
+
+

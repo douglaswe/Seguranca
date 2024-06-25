@@ -12,6 +12,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -87,6 +88,14 @@ export default function Home() {
     setIsModalOpen(false);
   };
 
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
   if (error) {
     return <div>Erro: {error}</div>;
   }
@@ -115,7 +124,7 @@ export default function Home() {
                   <FaEdit onClick={() => handleEdit(user)} />
                 </td>
                 <td className="align-center fixed-width-5">
-                  <FaTrash onClick={handleDelete} />
+                  <FaTrash onClick={openDeleteModal} />
                 </td>
               </tr>
             </tbody>
@@ -161,6 +170,17 @@ export default function Home() {
                   </label>
                   <button type="submit">Salvar</button>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {isDeleteModalOpen && (
+            <div className="modal" style={{ display: 'block' }}>
+              <div className="modal-delete">
+                <h2>Confirmar Exclusão</h2>
+                <p>Você realmente deseja apagar a conta?</p>
+                <button className="button" onClick={handleDelete}>Sim</button>
+                <button className="button" onClick={closeDeleteModal}>Não</button>
               </div>
             </div>
           )}
