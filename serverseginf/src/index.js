@@ -156,8 +156,9 @@ app.delete('/deleteuser/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const result = await db.query('DELETE FROM usuario WHERE usu_id = $1 RETURNING *', [id]);
-        if (result.rowCount > 0) {
+        const result = await db.query(`UPDATE usuario SET usu_nome = 'deletado', usu_email = 'deletado', usu_telefone = 'deletado', usu_senha = 'deletado' WHERE usu_id = $1`, [id]);
+        const exc = await db2.query(`INSERT INTO id_deletados(id) VALUES (${id});`);
+        if (result.rowCount > 0 && exc.rowCount > 0) {
             res.status(200).json({ message: 'Usuário deletado com sucesso!' });
         } else {
             res.status(404).json({ message: 'Usuário não encontrado' });
