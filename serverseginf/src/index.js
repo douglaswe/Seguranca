@@ -68,6 +68,45 @@ app.get('/gettermo', async (req, res) => {
     }
 });
 
+app.get('/gettermo/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const termo = await db.query(`SELECT * FROM termo t
+                                        JOIN aceite_termo at ON at.ace_id_termo = t.ter_id
+                                        WHERE at.ace_id_usuario = ${id};`);
+        const id_termo = termo.rows[0].ter_id
+        const opctotal = await db.query(`SELECT opc_id, opc_texto FROM opcional WHERE opc_id_termo = ${id_termo};`);
+        const opc_aceitado = await db.query(`SELECT aop_id_opcional 
+                                            FROM aceite_opc 
+                                            WHERE aop_id_usuario = ${id}
+                                            AND aop_id_termo = ${id_termo}`);
+        for(let i =0; i< opctotal.rowCount; i++){
+            opctotal.rows[i].opc_aceitado = false;
+        }
+        for(let i =0; i< opctotal.rowCount; i++){
+            for(let j = 0; j< opc_aceitado.rowCount; j++){
+                if(opctotal.rows[i].opc_id == opc_aceitado.rows[j].aop_id_opcional){
+                    opctotal.rows[i].opc_aceitado = true;
+                }
+            }
+        }
+        const resultado = {
+            ter_id: termo.rows[0].ter_id,
+            ter_versao: termo.rows[0].ter_versao,
+            ter_texto: termo.rows[0].ter_texto,
+            ter_data: termo.rows[0].ter_data,
+            ter_opcionais: opctotal.rows
+        }
+        if (termo.rowCount == 0) {
+            res.status(404).json({ message: 'dados não encontrados' });
+        } else {
+            res.status(200).json(resultado);
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.post('/cadastrar', async (req, res) => {
     try {
         const { nome, email, telefone, senha, termo_id } = req.body;
