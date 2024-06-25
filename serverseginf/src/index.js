@@ -112,19 +112,20 @@ app.post('/login', async (req, res) => {
         const { usu_email, usu_senha } = req.body;
         const queryEmail = await db.query(`SELECT usu_id FROM usuario WHERE usu_email = '${usu_email}';`);
         const deletados = await db2.query('SELECT id FROM id_deletados;');
-        async function testar_deletado(id){
+        function testar_deletado(id){
             for(let i = 0 ; i< deletados.rowCount; i++){
                 if(id == deletados.rows[i].id){
-                    await db.query(`UPDATE usuario SET usu_nome = 'deletado', usu_email = 'deletado', usu_telefone = 'deletado', usu_senha = 'deletado' WHERE usu_id = ${id}`);
-                    return true;
+                    return 1;
                 }
             }
+            return 0;
         }
 
         if (queryEmail.rowCount == 0) {
             res.status(500).json({ message: "E-mail não encontrado" });
-        } else if(queryEmail.rowCount == 1 && testar_deletado(queryEmail.rows[0]) == true) {
-            res.status(500).json({ message: "E-mail não encontrado" });
+        } else if(testar_deletado(queryEmail.rows[0].usu_id) == 1) {
+            await db.query(`UPDATE usuario SET usu_nome = 'deletado', usu_email = 'deletado', usu_telefone = 'deletado', usu_senha = 'deletado' WHERE usu_id = ${queryEmail.rows[0].usu_id}`);
+            res.status(500).json({ message: "E-mail não encontrado." });
         } else {
             const querySenha = await db.query(`SELECT usu_senha FROM usuario WHERE usu_email = '${usu_email}';`);
             if (usu_senha != querySenha.rows[0].usu_senha) {

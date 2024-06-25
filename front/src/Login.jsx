@@ -7,7 +7,7 @@ export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  //const [message, setMessage] = useState("");
 
   useEffect(() => {
     // Verificar se há um token de autenticação válido
@@ -35,14 +35,15 @@ export function Login() {
       
         Cookies.set("token", data.token, { sameSite: 'None', secure: true }); 
 
-        setMessage("Login successful");
+        //setMessage("Login successful");
         navigate("/home");
+        alert(data.message);
       } else {
-        setMessage(data.error || "Login failed");
+        alert(data.message);
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
-      setMessage("Login failed");
+      alert(data.message);
     }
   };
 
@@ -67,7 +68,6 @@ export function Login() {
         <button type="submit" className="button">
           Entrar
         </button>
-        {message && <p>{message}</p>}
         <Link className="signup-link" to="/cadastrar">
           Crie uma!
         </Link>
