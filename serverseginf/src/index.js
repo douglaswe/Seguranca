@@ -17,12 +17,24 @@ const db = new Pool({
     connectionString: "postgres://aygmbahg:GCwxJ9kJTABAiFxeuK520igmfHIsTgnF@kala.db.elephantsql.com/aygmbahg"
 });
 
+const db2 = new Pool({
+    connectionString: "postgres://trncmvpn:cF34bEJfRN6Q8PwnJ17wQhnRlSFLoTHg@mahmud.db.elephantsql.com/trncmvpn"
+});
+
 db.connect((err) => {
     if (err) {
         throw err;
         console.log(err)
     }
-    console.log('Connected to the database');
+    console.log('Conectado ao banco de dados principal');
+});
+
+db2.connect((err) => {
+    if (err) {
+        throw err;
+        console.log(err)
+    }
+    console.log('Conectado ao banco de dados auxiliar');
 });
 
 app.get('/getusers', (req, res) => {
