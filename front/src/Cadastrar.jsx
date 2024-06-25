@@ -52,13 +52,13 @@ export function Cadastrar() {
         const errorMessage = await response.text();
         throw new Error(errorMessage);
       }
-      
+
       console.log('Usuário cadastrado com sucesso!');
       alert('cadastrado com sucesso')
       navigate("/");
     } catch (error) {
       console.error('Erro ao cadastrar usuário:', error);
-      
+
     }
   };
 
@@ -77,9 +77,11 @@ export function Cadastrar() {
   };
 
   if (isLoading) {
-    return <div style={{ display: 'flex',
+    return <div style={{
+      display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center',marginTop:300}}>Carregando...</div>;
+      alignItems: 'center', marginTop: 300
+    }}>Carregando...</div>;
   }
 
   return (
@@ -106,11 +108,11 @@ export function Cadastrar() {
         <button className="button-cadastrar" type="submit">Cadastrar</button>
         <br /><br />
         <Link className="signup-cadastrar" to="/">Já tem uma conta? Entrar</Link>
-     
+
       </form>
 
       {isModalOpen && (
-        <div className="modal">
+        <div className="modal" style={{ display: 'block' }}>
           <div className="modal-content">
             <span className="close" onClick={fecharModal}>&times;</span>
             <div>
