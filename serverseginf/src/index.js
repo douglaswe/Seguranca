@@ -236,6 +236,32 @@ app.get('/getuser', async (req, res) => {
     }
 });
 
+// Add Optional Term
+app.post('/addOptionalTerm', async (req, res) => {
+    const { userId, termId, opcId } = req.body;
+    try {
+        await db.query(`INSERT INTO aceite_opc(aop_id_usuario, aop_id_termo, aop_id_opcional, aop_aceitado) 
+                        VALUES($1, $2, $3, TRUE)`, [userId, termId, opcId]);
+        res.status(201).json({ message: 'Termo opcional adicionado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Remove Optional Term
+app.post('/removeOptionalTerm', async (req, res) => {
+    const { userId, termId, opcId } = req.body;
+    try {
+        await db.query(`DELETE FROM aceite_opc 
+                        WHERE aop_id_usuario = $1 AND aop_id_termo = $2 AND aop_id_opcional = $3`, 
+                        [userId, termId, opcId]);
+        res.status(200).json({ message: 'Termo opcional removido com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 app.listen(3003, function () {
     console.log("Servidor rodando na porta 3003...");
 });

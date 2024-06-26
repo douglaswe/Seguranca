@@ -119,6 +119,69 @@ export default function Home() {
     return date.toLocaleDateString(undefined, options);
   };
 
+  const handleAddOptionalTerm = async (opcId) => {
+    try {
+      const token = Cookies.get("token");
+      await axios.post(
+        "http://localhost:3003/addOptionalTerm",
+        {
+          userId: user.usu_id,
+          termId: termo.ter_id,
+          opcId: opcId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Termo opcional adicionado com sucesso!");
+      // Update state to reflect changes
+      setTermo((prevTermo) => ({
+        ...prevTermo,
+        ter_opcionais: prevTermo.ter_opcionais.map((opcional) =>
+          opcional.opc_id === opcId
+            ? { ...opcional, opc_aceitado: true }
+            : opcional
+        ),
+      }));
+    } catch (error) {
+      toast.error("Erro ao adicionar termo opcional.");
+    }
+  };
+  
+  const handleRemoveOptionalTerm = async (opcId) => {
+    try {
+      const token = Cookies.get("token");
+      await axios.post(
+        "http://localhost:3003/removeOptionalTerm",
+        {
+          userId: user.usu_id,
+          termId: termo.ter_id,
+          opcId: opcId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Termo opcional removido com sucesso!");
+      // Update state to reflect changes
+      setTermo((prevTermo) => ({
+        ...prevTermo,
+        ter_opcionais: prevTermo.ter_opcionais.map((opcional) =>
+          opcional.opc_id === opcId
+            ? { ...opcional, opc_aceitado: false }
+            : opcional
+        ),
+      }));
+    } catch (error) {
+      toast.error("Erro ao remover termo opcional.");
+    }
+  };
+  
+
   return (
     <>
       {user ? (
@@ -162,22 +225,32 @@ export default function Home() {
           </button>
 
           {termo && (
-            <div className="termo-details">
-              <h2>Detalhes dos Termos</h2>
-              <p>Versão: {termo.ter_versao}</p>
-              <p>Data do termo: {formatarData(termo.ter_data)}</p>
-              <p>{termo.ter_texto}</p>
-              <h3>Termos opcionais:</h3>
-              <ul>
-                {termo.ter_opcionais.map((opcional) => (
-                  <li key={opcional.opc_id}>
-                    {opcional.opc_texto} -{" "}
-                    {opcional.opc_aceitado ? "Aceito" : "Não Aceito"}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+  <div className="termo-details">
+    <h2>Detalhes dos Termos</h2>
+    <p>Versão: {termo.ter_versao}</p>
+    <p>Data do termo: {formatarData(termo.ter_data)}</p>
+    <p>{termo.ter_texto}</p>
+    <h3>Termos opcionais:</h3>
+    <ul>
+      {termo.ter_opcionais.map((opcional) => (
+        <li key={opcional.opc_id}>
+          {opcional.opc_texto} -{" "}
+          {opcional.opc_aceitado ? "Aceito" : "Não Aceito"}
+          <button
+            onClick={() =>
+              opcional.opc_aceitado
+                ? handleRemoveOptionalTerm(opcional.opc_id)
+                : handleAddOptionalTerm(opcional.opc_id)
+            }
+          >
+            {opcional.opc_aceitado ? "Cancelar" : "Aceitar"}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
           {isModalOpen && (
             <div className="modal" style={{ display: "block" }}>
