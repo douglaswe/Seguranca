@@ -13,6 +13,7 @@ export default function Home() {
   const [editingUser, setEditingUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [termo, setTermo] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,6 +34,16 @@ export default function Home() {
         }
         const data = await response.json();
         setUser(data);
+
+        const termoResponse = await axios.get(
+          `http://localhost:3003/gettermo/${data.usu_id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setTermo(termoResponse.data);
       } catch (error) {
         console.error("Erro ao buscar usuário:", error);
         setError(error.message);
@@ -70,7 +81,9 @@ export default function Home() {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:3003/deleteuser/${user.usu_id}`);
+      const response = await axios.delete(
+        `http://localhost:3003/deleteuser/${user.usu_id}`
+      );
       setUser(null);
       toast.success(response.data.message);
       handleLogout();
@@ -80,7 +93,7 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    Cookies.remove("token", { sameSite: 'None', secure: true });
+    Cookies.remove("token", { sameSite: "None", secure: true });
     navigate("/");
   };
 
@@ -100,11 +113,26 @@ export default function Home() {
     return <div>Erro: {error}</div>;
   }
 
+  const formatarData = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, options);
+  };
+
   return (
     <>
       {user ? (
         <>
-          <h1 style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', marginTop: 20 }}>Meus dados</h1>
+          <h1
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              display: "flex",
+              marginTop: 20,
+            }}
+          >
+            Meus dados
+          </h1>
           <table className="table">
             <thead className="thead">
               <tr>
@@ -121,10 +149,10 @@ export default function Home() {
                 <td className="fixed-width">{user.usu_email}</td>
                 <td className="fixed-width-20 only-web">{user.usu_telefone}</td>
                 <td className="align-center fixed-width-5">
-                  <FaEdit onClick={() => handleEdit(user)} />
+                  <FaEdit style={{cursor:"pointer"}} onClick={() => handleEdit(user)} />
                 </td>
                 <td className="align-center fixed-width-5">
-                  <FaTrash onClick={openDeleteModal} />
+                  <FaTrash style={{cursor:"pointer"}} onClick={openDeleteModal} />
                 </td>
               </tr>
             </tbody>
@@ -132,10 +160,31 @@ export default function Home() {
           <button className="button-sair" onClick={handleLogout}>
             Sair
           </button>
+
+          {termo && (
+            <div className="termo-details">
+              <h2>Detalhes dos Termos</h2>
+              <p>Versão: {termo.ter_versao}</p>
+              <p>Data do termo: {formatarData(termo.ter_data)}</p>
+              <p>{termo.ter_texto}</p>
+              <h3>Termos opcionais:</h3>
+              <ul>
+                {termo.ter_opcionais.map((opcional) => (
+                  <li key={opcional.opc_id}>
+                    {opcional.opc_texto} -{" "}
+                    {opcional.opc_aceitado ? "Aceito" : "Não Aceito"}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {isModalOpen && (
-            <div className="modal" style={{ display: 'block' }}>
+            <div className="modal" style={{ display: "block" }}>
               <div className="modal-content">
-                <span className="close" onClick={closeModal}>&times;</span>
+                <span className="close" onClick={closeModal}>
+                  &times;
+                </span>
                 <h2>Editar</h2>
                 <form onSubmit={handleUpdateUser}>
                   <label>
@@ -144,7 +193,10 @@ export default function Home() {
                       type="text"
                       value={editingUser.usu_nome}
                       onChange={(e) =>
-                        setEditingUser({ ...editingUser, usu_nome: e.target.value })
+                        setEditingUser({
+                          ...editingUser,
+                          usu_nome: e.target.value,
+                        })
                       }
                     />
                   </label>
@@ -154,7 +206,10 @@ export default function Home() {
                       type="email"
                       value={editingUser.usu_email}
                       onChange={(e) =>
-                        setEditingUser({ ...editingUser, usu_email: e.target.value })
+                        setEditingUser({
+                          ...editingUser,
+                          usu_email: e.target.value,
+                        })
                       }
                     />
                   </label>
@@ -164,7 +219,23 @@ export default function Home() {
                       type="text"
                       value={editingUser.usu_telefone}
                       onChange={(e) =>
-                        setEditingUser({ ...editingUser, usu_telefone: e.target.value })
+                        setEditingUser({
+                          ...editingUser,
+                          usu_telefone: e.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                  <label>
+                    Senha:
+                    <input
+                      type="password"
+                      value={editingUser.usu_senha}
+                      onChange={(e) =>
+                        setEditingUser({
+                          ...editingUser,
+                          usu_senha: e.target.value,
+                        })
                       }
                     />
                   </label>
@@ -175,12 +246,16 @@ export default function Home() {
           )}
 
           {isDeleteModalOpen && (
-            <div className="modal" style={{ display: 'block' }}>
+            <div className="modal" style={{ display: "block" }}>
               <div className="modal-delete">
                 <h2>Confirmar Exclusão</h2>
                 <p>Você realmente deseja apagar a conta?</p>
-                <button className="button" onClick={handleDelete}>Sim</button>
-                <button className="button" onClick={closeDeleteModal}>Não</button>
+                <button className="button" onClick={handleDelete}>
+                  Sim
+                </button>
+                <button className="button" onClick={closeDeleteModal}>
+                  Não
+                </button>
               </div>
             </div>
           )}
